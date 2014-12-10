@@ -13,7 +13,7 @@ module Admin::Resources::DataTypes::BelongsToHelper
     label_text = @resource.human_attribute_name(attribute)
 
     values = if related.respond_to?(:roots)
-      expand_tree_into_select_field(related.roots, related_fk)
+      raw(expand_tree_into_select_field(related.roots, related_fk))
     else
       related.order(related.typus_order_by).map { |p| [p.to_label, p.id] }
     end
