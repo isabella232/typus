@@ -13,27 +13,27 @@ module Admin::Resources::TableHelper
     render 'helpers/admin/resources/table', locals
   end
 
-  def table_header(model, fields, params = params)
+  def table_header(model, fields, request_params = params)
     fields.map do |key, _|
 
       key = key.gsub('.', ' ') if key.to_s.match(/\./)
       content = model.human_attribute_name(key)
 
-      if params[:action].eql?('index') && model.typus_options_for(:sortable)
+      if request_params[:action].eql?('index') && model.typus_options_for(:sortable)
         association = model.reflect_on_association(key.to_sym)
         order_by = association ? association.foreign_key : key
 
         if (model.model_fields.map(&:first).map(&:to_s).include?(key) || model.reflect_on_all_associations(:belongs_to).map(&:name).include?(key.to_sym))
-          sort_order = case params[:sort_order]
+          sort_order = case request_params[:sort_order]
                        when 'asc' then %w(desc dropup)
                        when 'desc' then %w(asc dropdown)
                        else [nil, nil]
                        end
 
-          switch = "<span class='#{sort_order.last}'><span class='caret'></span></span>" if params[:order_by].eql?(order_by)
+          switch = "<span class='#{sort_order.last}'><span class='caret'></span></span>" if request_params[:order_by].eql?(order_by)
           options = { order_by: order_by, sort_order: sort_order.first }
           message = [content, switch].compact.join(' ').html_safe
-          content = link_to(message, params.merge(options))
+          content = link_to(message, request_params.merge(options))
         end
       end
 
